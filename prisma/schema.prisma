@@ -1,0 +1,95 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         String   @id @default(uuid())
+  email      String   @unique
+  name       String
+  document   Int
+  password   String
+  birth_date DateTime
+  phone      String
+  adress     String?
+  role       String   @default("USER")
+  graduation String?
+  Course     Course[]
+
+  @@map("User")
+}
+
+model Course {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  price       Float
+  userId      String
+  rating      Int      @default(0)
+  user        User     @relation(references: [id], fields: [userId])
+  Lesson      Lesson[]
+  test        Test[]
+
+  @@map("Course")
+}
+
+model Lesson {
+  id          String     @id @default(uuid())
+  title       String
+  description String
+  courseId    String
+  questions   Question[]
+  course      Course     @relation(fields: [courseId], references: [id])
+
+  @@map("Lesson")
+}
+
+model Question {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  lessonId    String
+  lesson      Lesson   @relation(fields: [lessonId], references: [id])
+  answers     Answer[]
+
+  @@map("Question")
+}
+
+model Answer {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  questionId  String
+  question    Question @relation(fields: [questionId], references: [id])
+
+  @@map("Answer")
+}
+
+model Test {
+  id          String     @id @default(uuid())
+  title       String
+  description String
+  courseId    String
+  exercises   Exercise[]
+  course      Course     @relation(fields: [courseId], references: [id])
+
+  @@map("Test")
+}
+
+model Exercise {
+  id       String @id @default(uuid())
+  title    String
+  question String
+  answer   String
+  testId   String
+  test     Test   @relation(fields: [testId], references: [id])
+
+  @@map("Exercise")
+}

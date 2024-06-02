@@ -1,0 +1,31 @@
+{
+  "name": "server",
+  "version": "0.0.1",
+  "description": "TeachMe Back-end",
+  "main": "src/server.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/teachme-app/server.git"
+  },
+  "keywords": [
+    "teachme"
+  ],
+  "author": "TeachMe Team",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/teachme-app/server/issues"
+  },
+  "homepage": "https://github.com/teachme-app/server#readme",
+  "dependencies": {
+    "@prisma/client": "^5.14.0",
+    "fastify": "^4.27.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.12",
+    "prisma": "^5.14.0",
+    "tsx": "^4.11.0"
+  }
+}
