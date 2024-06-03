@@ -11,17 +11,17 @@ datasource db {
 }
 
 model User {
-  id         String   @id @default(uuid())
-  email      String   @unique
-  name       String
-  document   Int
-  password   String
-  birth_date DateTime
-  phone      String
-  adress     String?
-  role       String   @default("USER")
-  graduation String?
-  Course     Course[]
+  id            String   @id @default(uuid())
+  email         String   @unique
+  name          String
+  document      String
+  password_hash String
+  birth_date    String
+  phone         String
+  adress        String?
+  role          String   @default("USER")
+  graduation    String?
+  Course        Course[]
 
   @@map("User")
 }
