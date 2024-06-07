@@ -1,10 +1,16 @@
 import { FastifyInstance } from 'fastify'
-import { createUser, getUser, loginUser } from './modules/controllers/user.controller'
-import { authMiddleware } from './modules/actions/login.middleware'
+import { createUser, getUser, loginUser, updateUser } from './modules/controllers/user.controller'
+import { authMiddleware } from './modules/actions/middlewares/login.middleware'
+import { userMiddleware } from './modules/actions/middlewares/user.middleware'
+
+const apiURL: string = '/api/v1'
 
 export const appRoutes = async (app: FastifyInstance) => {
-  app.post('/api/v1/user', async (req, res) => createUser(req, res))
-  app.get('/api/v1/user', { preHandler: [authMiddleware] }, async () => getUser())
+  app.post(`${apiURL}/user`, async (req, res) => createUser(req, res))
+  app.get(`${apiURL}/user`, { preHandler: [authMiddleware] }, async () => getUser())
+  app.patch(`${apiURL}/user`, { preHandler: [authMiddleware, userMiddleware] }, async (req, res) =>
+    updateUser(req, res)
+  )
 
-  app.post('/api/v1/login', async (req, res) => loginUser(req, res))
+  app.post(`${apiURL}/login`, async (req, res) => loginUser(req, res))
 }

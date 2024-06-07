@@ -1,7 +1,7 @@
 import argon2 from 'argon2'
 import z from 'zod'
 import { FastifyReply, FastifyRequest } from 'fastify'
-import { createUserAction, getUserByEmail, updateUserAction } from '../actions/user.action'
+import { createUserAction, getUserByEmail, getUserByToken, updateUserAction } from '../actions/user.action'
 import { prisma } from '../../lib/prisma'
 import jwt from 'jsonwebtoken'
 
@@ -111,10 +111,26 @@ export const updateUser = async (req: FastifyRequest, res: FastifyReply) => {
   } else {
     const { email, name, document, password, birth_date, phone, adress } = user.data
 
-    const { id } = req.params
+    const password_hash = await argon2.hash(String(password))
 
-    const password_hash = await argon2.hash(password)
+    const authorization = req.headers['authorization']
+    if (!authorization) {
+      res.status(401).send({ error: 'Not authorized' })
+      return
+    }
+    const token = authorization.replace('Bearer ', '')
+    const userInfo = await getUserByToken(token)
 
-    return updateUserAction(id, { email, name, document, password_hash, birth_date, phone, adress })
+    if (!userInfo) {
+      res.status(401).send({ error: 'Not authorized' })
+      return
+    }
+
+    try {
+      await updateUserAction(userInfo.id, { email, name, document, password_hash, birth_date, phone, adress })
+      res.send({ message: 'User updated successfully' })
+    } catch (error) {
+      res.status(500).send({ error: 'An error occurred while trying to update the user' })
+    }
   }
 }

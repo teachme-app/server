@@ -7,6 +7,11 @@ const PORT = process.env.PORT || 3000
 
 app.register(appRoutes)
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`)
+app.listen({ port: 3000 }, (err) => {
+  console.log(`SERVIDOR RODANDO`)
+  console.log(`----------------`)
+  console.log(`PORTA: ${PORT}`)
+  console.log(`URL: http://localhost:${PORT}`)
+  console.log(`API URL: /api/v1`)
+  console.log(`----------------`)
 })
