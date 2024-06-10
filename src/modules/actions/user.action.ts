@@ -15,12 +15,12 @@ export const createUserAction = async (user: User) => {
 }
 
 export const updateUserAction = async (id: string, user) => {
-  const { email, name, document, password_hash, birth_date, phone, adress } = user
+  const { email, name, document, birth_date, phone, adress } = user
 
   try {
     return await prisma.user.update({
       where: { id },
-      data: { email, name, document, password_hash, birth_date, phone, adress },
+      data: { email, name, document, birth_date, phone, adress },
     })
   } catch (error) {
     return { error: error.message }
@@ -42,4 +42,12 @@ export const getUserByToken = async (token: string) => {
   const user = await prisma.user.findUnique({ where: { id: user_id } })
 
   return user
+}
+
+export const deleteUserAction = async (id: string) => {
+  try {
+    return await prisma.user.delete({ where: { id } })
+  } catch (error) {
+    return { error: error.message }
+  }
 }

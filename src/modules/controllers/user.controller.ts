@@ -86,7 +86,6 @@ export const updateUser = async (req: FastifyRequest, res: FastifyReply) => {
     email: z.string().email().optional(),
     name: z.string().optional(),
     document: z.string().optional(), // .regex(/^[0-9]{2}[\.]?[0-9]{3}[\.]?[0-9]{3}[\/]?[0-9]{4}[-]?[0-9]{2}([0-9]{3}[\.]?[0-9]{3}[\.]?[0-9]{3}[-]?[0-9]{2})$/)
-    password: z.string().min(8).optional(),
     birth_date: z
       .string()
       .regex(/^\d{2}-\d{2}-\d{4}$/)
@@ -109,9 +108,7 @@ export const updateUser = async (req: FastifyRequest, res: FastifyReply) => {
       res.status(500).send('Unknown error')
     }
   } else {
-    const { email, name, document, password, birth_date, phone, adress } = user.data
-
-    const password_hash = await argon2.hash(String(password))
+    const { email, name, document, birth_date, phone, adress } = user.data
 
     const authorization = req.headers['authorization']
     if (!authorization) {
@@ -127,10 +124,32 @@ export const updateUser = async (req: FastifyRequest, res: FastifyReply) => {
     }
 
     try {
-      await updateUserAction(userInfo.id, { email, name, document, password_hash, birth_date, phone, adress })
+      await updateUserAction(userInfo.id, { email, name, document, birth_date, phone, adress })
       res.send({ message: 'User updated successfully' })
     } catch (error) {
       res.status(500).send({ error: 'An error occurred while trying to update the user' })
     }
+  }
+}
+
+export const deleteUser = async (req: FastifyRequest, res: FastifyReply) => {
+  const authorization = req.headers['authorization']
+  if (!authorization) {
+    res.status(401).send({ error: 'Not authorized' })
+    return
+  }
+  const token = authorization.replace('Bearer ', '')
+  const userInfo = await getUserByToken(token)
+
+  if (!userInfo) {
+    res.status(401).send({ error: 'Not authorized' })
+    return
+  }
+
+  try {
+    await prisma.user.delete({ where: { id: userInfo.id } })
+    res.send({ message: 'User deleted successfully' })
+  } catch (error) {
+    res.status(500).send({ error: 'An error occurred while trying to delete the user' })
   }
 }
