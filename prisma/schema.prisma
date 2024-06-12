@@ -34,7 +34,7 @@ model Course {
   userId      String
   rating      Int      @default(0)
   user        User     @relation(references: [id], fields: [userId])
-  Lesson      Lesson[]
+  lesson      Lesson[]
   test        Test[]
 
   @@map("Course")
