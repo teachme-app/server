@@ -1,7 +1,13 @@
 import argon2 from 'argon2'
 import z from 'zod'
 import { FastifyReply, FastifyRequest } from 'fastify'
-import { createUserAction, getUserByEmail, getUserByToken, updateUserAction } from '../actions/user.action'
+import {
+  changeRoleToTeacherAction,
+  createUserAction,
+  getUserByEmail,
+  getUserByToken,
+  updateUserAction,
+} from '../actions/user.action'
 import { prisma } from '../../../lib/prisma'
 import jwt from 'jsonwebtoken'
 
@@ -151,5 +157,39 @@ export const deleteUser = async (req: FastifyRequest, res: FastifyReply) => {
     res.send({ message: 'User deleted successfully' })
   } catch (error) {
     res.status(500).send({ error: 'An error occurred while trying to delete the user' })
+  }
+}
+
+export const changeRoleToTeacher = async (req: FastifyRequest, res: FastifyReply) => {
+  const userObject = z.object({
+    graduation: z.string(),
+  })
+
+  const user = userObject.safeParse(req.body)
+
+  if (!user.success) {
+    res.status(400).send({ error: user.error })
+  } else {
+    const { graduation } = user.data
+
+    const authorization = req.headers['authorization']
+    if (!authorization) {
+      res.status(401).send({ error: 'Not authorized' })
+      return
+    }
+    const token = authorization.replace('Bearer ', '')
+    const userInfo = await getUserByToken(token)
+
+    if (!userInfo) {
+      res.status(401).send({ error: 'Not authorized' })
+      return
+    }
+
+    try {
+      await changeRoleToTeacherAction(userInfo.id, graduation)
+      res.send({ message: 'Role changed to teacher successfully' })
+    } catch (e) {
+      res.status(500).send({ error: 'An error occurred while trying to change the role' })
+    }
   }
 }

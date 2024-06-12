@@ -51,3 +51,14 @@ export const deleteUserAction = async (id: string) => {
     return { error: error.message }
   }
 }
+
+export const changeRoleToTeacherAction = async (id: string, graduation: string) => {
+  try {
+    return await prisma.user.update({
+      where: { id },
+      data: { role: 'TEACHER', graduation },
+    })
+  } catch (error) {
+    return { error: error.message }
+  }
+}

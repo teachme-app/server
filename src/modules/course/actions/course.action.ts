@@ -12,3 +12,16 @@ export const createCourseAction = async (course: Course) => {
     return { error: error.message }
   }
 }
+
+export const updateCourseAction = async (id: string, course) => {
+  const { title, description, price } = course
+
+  try {
+    return await prisma.course.update({
+      where: { id },
+      data: { title, description, price },
+    })
+  } catch (error) {
+    return { error: error.message }
+  }
+}
