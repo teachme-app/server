@@ -32,6 +32,11 @@ export const createCourse = async (req: FastifyRequest, res: FastifyReply) => {
       return
     }
 
+    if (userInfo.role !== 'TEACHER') {
+      res.status(401).send({ error: 'You need to be a teacher to create a course' })
+      return
+    }
+
     try {
       await createCourseAction({ title, description, price, user_id: userInfo.id })
       res.send({ message: 'Course created successfully' })
