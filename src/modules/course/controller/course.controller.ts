@@ -107,7 +107,7 @@ export const deleteCourse = async (req: FastifyRequest, res: FastifyReply) => {
     id: z.string(),
   })
 
-  const course = courseObject.safeParse(req.body)
+  const course = courseObject.safeParse(req.query)
 
   const authorization = req.headers['authorization']
   if (!authorization) {
