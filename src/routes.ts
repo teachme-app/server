@@ -20,6 +20,11 @@ import {
   getLessonsByCourse,
   updateLesson,
 } from './modules/lesson/controller/lesson.controller'
+import {
+  createQuestion,
+  deleteQuestion,
+  getQuestionsByLesson,
+} from './modules/questions/controller/question.controller'
 
 const apiURL: string = '/api/v1'
 
@@ -46,5 +51,15 @@ export const appRoutes = async (app: FastifyInstance) => {
   )
   app.delete(`${apiURL}/lesson/:id`, { preHandler: [authMiddleware] }, async (req, res) =>
     deleteLesson(req, res)
+  )
+
+  app.post(`${apiURL}/question`, { preHandler: [authMiddleware] }, async (req, res) =>
+    createQuestion(req, res)
+  )
+  app.get(`${apiURL}/question/:id`, { preHandler: [authMiddleware] }, async (req, res) =>
+    getQuestionsByLesson(req, res)
+  )
+  app.delete(`${apiURL}/question/:id`, { preHandler: [authMiddleware] }, async (req, res) =>
+    deleteQuestion(req, res)
   )
 }

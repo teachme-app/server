@@ -21,3 +21,12 @@ export const updateLessonAction = async (lesson: Lesson) => {
     return { error: error.message }
   }
 }
+
+export const getLessonById = async (id: string) => {
+  return await prisma.lesson.findUnique({
+    where: { id },
+    include: {
+      questions: true,
+    },
+  })
+}

@@ -11,17 +11,19 @@ datasource db {
 }
 
 model User {
-  id            String   @id @default(uuid())
-  email         String   @unique
+  id            String     @id @default(uuid())
+  email         String     @unique
   name          String
   document      String
   password_hash String
   birth_date    String
   phone         String
   adress        String?
-  role          String   @default("USER")
+  role          String     @default("USER")
   graduation    String?
   Course        Course[]
+  Question      Question[]
+  Answer        Answer[]
 
   @@map("User")
 }
@@ -59,6 +61,8 @@ model Question {
   lessonId    String
   lesson      Lesson   @relation(fields: [lessonId], references: [id])
   answers     Answer[]
+  User        User?    @relation(fields: [userId], references: [id])
+  userId      String?
 
   @@map("Question")
 }
@@ -68,6 +72,8 @@ model Answer {
   title       String
   description String
   questionId  String
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id])
   question    Question @relation(fields: [questionId], references: [id])
 
   @@map("Answer")

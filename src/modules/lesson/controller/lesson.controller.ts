@@ -131,6 +131,7 @@ export const getLessonsByCourse = async (req: FastifyRequest, res: FastifyReply)
         id: true,
         title: true,
         description: true,
+        questions: true,
       },
     })
     res.send(lessons)
