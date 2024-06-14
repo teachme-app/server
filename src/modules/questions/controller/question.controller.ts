@@ -81,6 +81,7 @@ export const getQuestionsByLesson = async (req: FastifyRequest, res: FastifyRepl
 
     return await prisma.question.findMany({
       where: { lessonId },
+      include: { answers: true },
     })
   }
 }

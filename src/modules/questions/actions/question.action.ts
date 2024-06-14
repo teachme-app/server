@@ -10,3 +10,9 @@ export const createQuestionAction = async (question: Question) => {
     return { error: error.message }
   }
 }
+
+export const getQuestionById = async (id: string) => {
+  return await prisma.question.findUnique({
+    where: { id },
+  })
+}
