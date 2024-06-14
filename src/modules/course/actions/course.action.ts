@@ -13,6 +13,10 @@ export const createCourseAction = async (course: Course) => {
   }
 }
 
+export const getCourseByIdAction = async (id: string) => {
+  return await prisma.course.findUnique({ where: { id } })
+}
+
 export const updateCourseAction = async (id: string, course) => {
   const { title, description, price } = course
 

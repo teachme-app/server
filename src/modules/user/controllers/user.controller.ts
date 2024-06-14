@@ -36,8 +36,12 @@ export const createUser = async (req: FastifyRequest, res: FastifyReply) => {
     const { email, name, document, password, birth_date, phone, adress } = user.data
 
     const password_hash = await argon2.hash(password)
-
-    return createUserAction({ email, name, document, password_hash, birth_date, phone, adress })
+    try {
+      await createUserAction({ email, name, document, password_hash, birth_date, phone, adress })
+      res.send({ message: 'User created successfully' })
+    } catch (error) {
+      res.status(500).send({ error: 'An error occurred while trying to create the user' })
+    }
   }
 }
 

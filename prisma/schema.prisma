@@ -45,6 +45,7 @@ model Lesson {
   title       String
   description String
   courseId    String
+  videoUrl    String
   questions   Question[]
   course      Course     @relation(fields: [courseId], references: [id])
 

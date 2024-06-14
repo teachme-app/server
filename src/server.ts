@@ -2,6 +2,12 @@ import fastify from 'fastify'
 import { appRoutes } from './routes'
 import z from 'zod'
 const app = fastify()
+import cors from '@fastify/cors'
+
+app.register(cors, {
+  origin: '*',
+  methods: ['POST', 'GET', 'DELETE', 'PATCH'],
+})
 
 const PORT = process.env.PORT || 3000
 
