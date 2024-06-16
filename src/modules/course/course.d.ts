@@ -3,4 +3,5 @@ export type Course = {
   description: string
   price: number
   user_id: string
+  banner: string
 }
