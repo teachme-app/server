@@ -40,7 +40,7 @@ export const createUser = async (req: FastifyRequest, res: FastifyReply) => {
       await createUserAction({ email, name, document, password_hash, birth_date, phone, adress })
       res.send({ message: 'User created successfully' })
     } catch (error) {
-      res.status(500).send({ error: 'An error occurred while trying to create the user' })
+      res.status(500).send({ error: error.message })
     }
   }
 }

@@ -1,3 +1,4 @@
+import { error } from 'console'
 import { prisma } from '../../../lib/prisma'
 import { User } from '../user'
 import jwt from 'jsonwebtoken'
@@ -10,7 +11,10 @@ export const createUserAction = async (user: User) => {
       data: { email, name, document, password_hash, birth_date, phone, adress },
     })
   } catch (error) {
-    return { error: error.message }
+    if (error.code === 'P2002') {
+      throw new Error('Email or document already exists')
+    }
+    throw new Error(error.message)
   }
 }
 
