@@ -4,11 +4,11 @@ import { User } from '../user'
 import jwt from 'jsonwebtoken'
 
 export const createUserAction = async (user: User) => {
-  const { email, name, document, password_hash, birth_date, phone, adress } = user
+  const { email, name, document, password_hash, birth_date, phone, adress, profile_image } = user
 
   try {
     return await prisma.user.create({
-      data: { email, name, document, password_hash, birth_date, phone, adress },
+      data: { email, name, document, password_hash, birth_date, phone, adress, profile_image },
     })
   } catch (error) {
     if (error.code === 'P2002') {
