@@ -2,7 +2,7 @@
   "compilerOptions": {
       "target": "esnext",
       "lib": ["ESNext"],
-      "module": "esnext",
+      "module": "NodeNext",
       "types": ["bun-types"],
       "moduleResolution": "nodenext",
   },

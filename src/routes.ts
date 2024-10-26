@@ -34,7 +34,9 @@ export const appRoutes = async (app: FastifyInstance) => {
   app.get(`${apiURL}/user`, { preHandler: [authMiddleware] }, async () => getUser())
   app.patch(`${apiURL}/user`, { preHandler: [authMiddleware] }, async (req, res) => updateUser(req, res))
   app.delete(`${apiURL}/user`, { preHandler: [authMiddleware] }, async (req, res) => deleteUser(req, res))
-  app.patch(`${apiURL}/create-teacher`, async (req, res) => changeRoleToTeacher(req, res))
+  app.patch(`${apiURL}/create-teacher`, { preHandler: [authMiddleware] }, async (req, res) =>
+    changeRoleToTeacher(req, res)
+  )
 
   app.post(`${apiURL}/login`, async (req, res) => loginUser(req, res))
 
