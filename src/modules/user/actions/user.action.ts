@@ -31,7 +31,7 @@ export const updateUserAction = async (id: string, user) => {
   }
 }
 
-export const getUserByEmail = async (email: string) => {
+export const getUserByEmailAction = async (email: string) => {
   return await prisma.user.findUnique({ where: { email } })
 }
 

@@ -4,6 +4,7 @@ import {
   createUser,
   deleteUser,
   getUser,
+  getUserByEmail,
   loginUser,
   updateUser,
 } from './modules/user/controllers/user.controller'
@@ -32,6 +33,9 @@ const apiURL: string = '/api/v1'
 export const appRoutes = async (app: FastifyInstance) => {
   app.post(`${apiURL}/user`, async (req, res) => createUser(req, res))
   app.get(`${apiURL}/user`, { preHandler: [authMiddleware] }, async () => getUser())
+  app.post(`${apiURL}/user-email`, { preHandler: [authMiddleware] }, async (req, res) =>
+    getUserByEmail(req, res)
+  )
   app.patch(`${apiURL}/user`, { preHandler: [authMiddleware] }, async (req, res) => updateUser(req, res))
   app.delete(`${apiURL}/user`, { preHandler: [authMiddleware] }, async (req, res) => deleteUser(req, res))
   app.patch(`${apiURL}/create-teacher`, { preHandler: [authMiddleware] }, async (req, res) =>

@@ -4,7 +4,7 @@ import { FastifyReply, FastifyRequest } from 'fastify'
 import {
   changeRoleToTeacherAction,
   createUserAction,
-  getUserByEmail,
+  getUserByEmailAction,
   getUserByToken,
   updateUserAction,
 } from '../actions/user.action'
@@ -47,6 +47,33 @@ export const createUser = async (req: FastifyRequest, res: FastifyReply) => {
 
 export const getUser = async () => {
   return prisma.user.findMany()
+}
+
+export const getUserByEmail = async (req: FastifyRequest, res: FastifyReply) => {
+  const emailObject = z.object({
+    email: z.string().email(),
+  })
+
+  const parsedEmail = emailObject.safeParse(req.body)
+
+  if (!parsedEmail.success) {
+    if (Array.isArray(parsedEmail.error)) {
+      res.status(400).send(parsedEmail.error.map((error) => error.message).join(', '))
+    } else if (parsedEmail.error && typeof parsedEmail.error.message === 'string') {
+      res.status(400).send(parsedEmail.error.message)
+    } else {
+      res.status(500).send('Unknown error')
+    }
+  } else {
+    const { email } = parsedEmail.data
+
+    try {
+      const user = await getUserByEmailAction(email)
+      res.send(user)
+    } catch (error) {
+      res.status(500).send({ error: 'An error occurred while trying to get the user' })
+    }
+  }
 }
 
 export const loginUser = async (req: FastifyRequest, res: FastifyReply) => {
