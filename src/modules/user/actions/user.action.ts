@@ -35,7 +35,7 @@ export const getUserByEmailAction = async (email: string) => {
   return await prisma.user.findUnique({ where: { email } })
 }
 
-export const getUserByToken = async (token: string) => {
+export const getUserByTokenAction = async (token: string) => {
   const { user_id } = jwt.verify(
     token,
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiZTA4ZTU1ODUtZjRjMi00ODRjLThhNzAtM2MzNGNlNWQyODkzIiwiaWF0IjoxNzE3NzczMTM0fQ.y3C12gPPFo8AOkDEUsH1Hdof7auwMNBYux3wwLMBhz8'

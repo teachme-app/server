@@ -5,7 +5,7 @@ import {
   changeRoleToTeacherAction,
   createUserAction,
   getUserByEmailAction,
-  getUserByToken,
+  getUserByTokenAction,
   updateUserAction,
 } from '../actions/user.action'
 import { prisma } from '../../../lib/prisma'
@@ -47,6 +47,42 @@ export const createUser = async (req: FastifyRequest, res: FastifyReply) => {
 
 export const getUser = async () => {
   return prisma.user.findMany()
+}
+
+export const getUserById = async (req: FastifyRequest, res: FastifyReply) => {
+  const idObject = z.object({
+    id: z.string(),
+  })
+
+  const parsedId = idObject.safeParse(req.params)
+
+  if (!parsedId.success) {
+    if (Array.isArray(parsedId.error)) {
+      res.status(400).send(parsedId.error.map((error) => error.message).join(', '))
+    } else if (parsedId.error && typeof parsedId.error.message === 'string') {
+      res.status(400).send(parsedId.error.message)
+    } else {
+      res.status(500).send('Unknown error')
+    }
+  } else {
+    const { id } = parsedId.data
+
+    try {
+      const user = await prisma.user.findUnique({
+        where: {
+          id,
+        },
+      })
+
+      if (!user) {
+        res.status(404).send({ error: 'User not found' })
+      }
+
+      res.send(user)
+    } catch (error) {
+      res.status(500).send({ error: 'An error occurred while trying to get the user' })
+    }
+  }
 }
 
 export const getUserByEmail = async (req: FastifyRequest, res: FastifyReply) => {
@@ -153,7 +189,7 @@ export const updateUser = async (req: FastifyRequest, res: FastifyReply) => {
       return
     }
     const token = authorization.replace('Bearer ', '')
-    const userInfo = await getUserByToken(token)
+    const userInfo = await getUserByTokenAction(token)
 
     if (!userInfo) {
       res.status(401).send({ error: 'Not authorized' })
@@ -176,7 +212,7 @@ export const deleteUser = async (req: FastifyRequest, res: FastifyReply) => {
     return
   }
   const token = authorization.replace('Bearer ', '')
-  const userInfo = await getUserByToken(token)
+  const userInfo = await getUserByTokenAction(token)
 
   if (!userInfo) {
     res.status(401).send({ error: 'Not authorized' })
@@ -209,7 +245,7 @@ export const changeRoleToTeacher = async (req: FastifyRequest, res: FastifyReply
       return
     }
     const token = authorization.replace('Bearer ', '')
-    const userInfo = await getUserByToken(token)
+    const userInfo = await getUserByTokenAction(token)
 
     if (!userInfo) {
       res.status(401).send({ error: 'Not authorized' })
@@ -223,4 +259,21 @@ export const changeRoleToTeacher = async (req: FastifyRequest, res: FastifyReply
       res.status(500).send({ error: 'An error occurred while trying to change the role' })
     }
   }
+}
+
+export const getUserByToken = async (req: FastifyRequest, res: FastifyReply) => {
+  const authorization = req.headers['authorization']
+  if (!authorization) {
+    res.status(401).send({ error: 'Not authorized' })
+    return
+  }
+  const token = authorization.replace('Bearer ', '')
+  const userInfo = await getUserByTokenAction(token)
+
+  if (!userInfo) {
+    res.status(401).send({ error: 'Not authorized' })
+    return
+  }
+
+  res.send(userInfo)
 }

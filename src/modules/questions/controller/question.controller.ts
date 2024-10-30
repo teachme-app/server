@@ -1,7 +1,7 @@
 import { FastifyReply, FastifyRequest } from 'fastify'
 import { z } from 'zod'
 import { createQuestionAction } from '../actions/question.action'
-import { getUserByToken } from '../../user/actions/user.action'
+import { getUserByTokenAction } from '../../user/actions/user.action'
 import { getLessonById } from '../../lesson/actions/lesson.action'
 import { getCourseByIdAction } from '../../course/actions/course.action'
 import { prisma } from '../../../lib/prisma'
@@ -26,7 +26,7 @@ export const createQuestion = async (req: FastifyRequest, res: FastifyReply) => 
       return
     }
     const token = authorization.replace('Bearer ', '')
-    const userInfo = await getUserByToken(token)
+    const userInfo = await getUserByTokenAction(token)
 
     if (!userInfo) {
       res.status(401).send({ error: 'Not authorized' })
@@ -66,7 +66,7 @@ export const getQuestionsByLesson = async (req: FastifyRequest, res: FastifyRepl
       return
     }
     const token = authorization.replace('Bearer ', '')
-    const userInfo = await getUserByToken(token)
+    const userInfo = await getUserByTokenAction(token)
 
     if (!userInfo) {
       res.status(401).send({ error: 'Not authorized' })
@@ -104,7 +104,7 @@ export const deleteQuestion = async (req: FastifyRequest, res: FastifyReply) => 
       return
     }
     const token = authorization.replace('Bearer ', '')
-    const userInfo = await getUserByToken(token)
+    const userInfo = await getUserByTokenAction(token)
 
     if (!userInfo) {
       res.status(401).send({ error: 'Not authorized' })

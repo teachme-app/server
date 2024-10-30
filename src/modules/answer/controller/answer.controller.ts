@@ -1,5 +1,5 @@
 import { FastifyReply, FastifyRequest } from 'fastify'
-import { getUserByToken } from '../../user/actions/user.action'
+import { getUserByTokenAction } from '../../user/actions/user.action'
 import { createAnswerAction, getAnswerById } from '../actions/answer.action'
 import { z } from 'zod'
 import { getQuestionById } from '../../questions/actions/question.action'
@@ -25,7 +25,7 @@ export const createAnswer = async (req: FastifyRequest, res: FastifyReply) => {
       return
     }
     const token = authorization.replace('Bearer ', '')
-    const userInfo = await getUserByToken(token)
+    const userInfo = await getUserByTokenAction(token)
 
     if (!userInfo) {
       res.status(401).send({ error: 'Not authorized' })
@@ -65,7 +65,7 @@ export const deleteAnswer = async (req: FastifyRequest, res: FastifyReply) => {
       return
     }
     const token = authorization.replace('Bearer ', '')
-    const userInfo = await getUserByToken(token)
+    const userInfo = await getUserByTokenAction(token)
 
     if (!userInfo) {
       res.status(401).send({ error: 'Not authorized' })

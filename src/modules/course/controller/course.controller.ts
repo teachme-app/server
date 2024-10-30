@@ -1,7 +1,7 @@
 import { FastifyReply, FastifyRequest } from 'fastify'
 import { z } from 'zod'
 import { createCourseAction, updateCourseAction } from '../actions/course.action'
-import { getUserByToken } from '../../user/actions/user.action'
+import { getUserByTokenAction } from '../../user/actions/user.action'
 import { prisma } from '../../../lib/prisma'
 
 export const createCourse = async (req: FastifyRequest, res: FastifyReply) => {
@@ -9,6 +9,7 @@ export const createCourse = async (req: FastifyRequest, res: FastifyReply) => {
     title: z.string().max(20),
     description: z.string().max(150),
     price: z.number(),
+    banner: z.string(),
   })
 
   const course = courseObject.safeParse(req.body)
@@ -17,7 +18,7 @@ export const createCourse = async (req: FastifyRequest, res: FastifyReply) => {
     res.code(400).send({ error: course.error })
     return
   } else {
-    const { title, description, price } = course.data
+    const { title, description, price, banner } = course.data
 
     const authorization = req.headers['authorization']
     if (!authorization) {
@@ -25,7 +26,7 @@ export const createCourse = async (req: FastifyRequest, res: FastifyReply) => {
       return
     }
     const token = authorization.replace('Bearer ', '')
-    const userInfo = await getUserByToken(token)
+    const userInfo = await getUserByTokenAction(token)
 
     if (!userInfo) {
       res.status(401).send({ error: 'Not authorized' })
@@ -38,7 +39,7 @@ export const createCourse = async (req: FastifyRequest, res: FastifyReply) => {
     }
 
     try {
-      await createCourseAction({ title, description, price, user_id: userInfo.id })
+      await createCourseAction({ title, description, price, banner, user_id: userInfo.id })
       res.send({ message: 'Course created successfully' })
     } catch (e) {
       res.status(500).send({ error: 'An error occurred while trying to create the course' })
@@ -59,6 +60,41 @@ export const getCourses = async (req: FastifyRequest, res: FastifyReply) => {
   })
 }
 
+export const getCourse = async (req: FastifyRequest, res: FastifyReply) => {
+  const courseObject = z.object({
+    id: z.string(),
+  })
+
+  const course = courseObject.safeParse(req.query)
+
+  const authorization = req.headers['authorization']
+  if (!authorization) {
+    res.status(401).send({ error: 'Not authorized' })
+    return
+  }
+  const token = authorization.replace('Bearer ', '')
+  const userInfo = await getUserByTokenAction(token)
+
+  if (!userInfo) {
+    res.status(401).send({ error: 'Not authorized' })
+    return
+  }
+
+  if (!course.success) {
+    res.code(400).send({ error: course.error })
+    return
+  } else {
+    const { id } = course.data
+    try {
+      const courseInfo = await prisma.course.findUnique({ where: { id } })
+
+      return await prisma.course.findUnique({ where: { id } })
+    } catch (e) {
+      res.status(500).send({ error: 'An error occurred while trying to get the course' })
+    }
+  }
+}
+
 export const updateCourse = async (req: FastifyRequest, res: FastifyReply) => {
   const courseObject = z.object({
     id: z.string(),
@@ -75,7 +111,7 @@ export const updateCourse = async (req: FastifyRequest, res: FastifyReply) => {
     return
   }
   const token = authorization.replace('Bearer ', '')
-  const userInfo = await getUserByToken(token)
+  const userInfo = await getUserByTokenAction(token)
 
   if (!userInfo) {
     res.status(401).send({ error: 'Not authorized' })
@@ -115,7 +151,7 @@ export const deleteCourse = async (req: FastifyRequest, res: FastifyReply) => {
     return
   }
   const token = authorization.replace('Bearer ', '')
-  const userInfo = await getUserByToken(token)
+  const userInfo = await getUserByTokenAction(token)
 
   if (!userInfo) {
     res.status(401).send({ error: 'Not authorized' })

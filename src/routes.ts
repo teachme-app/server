@@ -5,6 +5,8 @@ import {
   deleteUser,
   getUser,
   getUserByEmail,
+  getUserById,
+  getUserByToken,
   loginUser,
   updateUser,
 } from './modules/user/controllers/user.controller'
@@ -12,6 +14,7 @@ import { authMiddleware } from './modules/user/actions/middlewares/login.middlew
 import {
   createCourse,
   deleteCourse,
+  getCourse,
   getCourses,
   updateCourse,
 } from './modules/course/controller/course.controller'
@@ -33,9 +36,13 @@ const apiURL: string = '/api/v1'
 export const appRoutes = async (app: FastifyInstance) => {
   app.post(`${apiURL}/user`, async (req, res) => createUser(req, res))
   app.get(`${apiURL}/user`, { preHandler: [authMiddleware] }, async () => getUser())
+  app.get(`${apiURL}/user-token`, { preHandler: [authMiddleware] }, async (req, res) =>
+    getUserByToken(req, res)
+  )
   app.post(`${apiURL}/user-email`, { preHandler: [authMiddleware] }, async (req, res) =>
     getUserByEmail(req, res)
   )
+  app.get(`${apiURL}/user/:id`, { preHandler: [authMiddleware] }, async (req, res) => getUserById(req, res))
   app.patch(`${apiURL}/user`, { preHandler: [authMiddleware] }, async (req, res) => updateUser(req, res))
   app.delete(`${apiURL}/user`, { preHandler: [authMiddleware] }, async (req, res) => deleteUser(req, res))
   app.patch(`${apiURL}/create-teacher`, { preHandler: [authMiddleware] }, async (req, res) =>
@@ -46,6 +53,7 @@ export const appRoutes = async (app: FastifyInstance) => {
 
   app.post(`${apiURL}/course`, { preHandler: [authMiddleware] }, async (req, res) => createCourse(req, res))
   app.get(`${apiURL}/course`, { preHandler: [authMiddleware] }, async (req, res) => getCourses(req, res))
+  app.get(`${apiURL}/course/:id`, { preHandler: [authMiddleware] }, async (req, res) => getCourse(req, res))
   app.patch(`${apiURL}/course`, { preHandler: [authMiddleware] }, async (req, res) => updateCourse(req, res))
   app.delete(`${apiURL}/course/:id`, { preHandler: [authMiddleware] }, async (req, res) =>
     deleteCourse(req, res)
