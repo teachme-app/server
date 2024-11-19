@@ -1,5 +1,6 @@
 import { FastifyInstance } from 'fastify'
 import {
+  buyCourse,
   changeRoleToTeacher,
   createUser,
   deleteUser,
@@ -7,6 +8,7 @@ import {
   getUserByEmail,
   getUserById,
   getUserByToken,
+  getUserCourses,
   loginUser,
   updateUser,
 } from './modules/user/controllers/user.controller'
@@ -48,6 +50,9 @@ export const appRoutes = async (app: FastifyInstance) => {
   app.patch(`${apiURL}/create-teacher`, { preHandler: [authMiddleware] }, async (req, res) =>
     changeRoleToTeacher(req, res)
   )
+  app.get(`${apiURL}/user-courses`, { preHandler: [authMiddleware] }, async (req, res) =>
+    getUserCourses(req, res)
+  )
 
   app.post(`${apiURL}/login`, async (req, res) => loginUser(req, res))
 
@@ -58,6 +63,7 @@ export const appRoutes = async (app: FastifyInstance) => {
   app.delete(`${apiURL}/course/:id`, { preHandler: [authMiddleware] }, async (req, res) =>
     deleteCourse(req, res)
   )
+  app.post(`${apiURL}/buy-course`, { preHandler: [authMiddleware] }, async (req, res) => buyCourse(req, res))
 
   app.post(`${apiURL}/lesson`, { preHandler: [authMiddleware] }, async (req, res) => createLesson(req, res))
   app.patch(`${apiURL}/lesson`, { preHandler: [authMiddleware] }, async (req, res) => updateLesson(req, res))

@@ -114,23 +114,24 @@ export const updateLesson = async (req: FastifyRequest, res: FastifyReply) => {
 
 export const getLessonsByCourse = async (req: FastifyRequest, res: FastifyReply) => {
   const getLessonsByCourseObject = z.object({
-    courseId: z.string().uuid(),
+    id: z.string().uuid(),
   })
 
-  const courseId = getLessonsByCourseObject.safeParse(req.query)
+  const id = getLessonsByCourseObject.safeParse(req.params)
 
-  if (!courseId.success) {
-    res.code(400).send({ error: courseId.error })
+  if (!id.success) {
+    res.code(400).send({ error: id.error })
     return
   } else {
     const lessons = await prisma.lesson.findMany({
       where: {
-        courseId: courseId.data.courseId,
+        courseId: id.data.id,
       },
       select: {
         id: true,
         title: true,
         description: true,
+        videoUrl: true,
         questions: true,
       },
     })

@@ -2,6 +2,7 @@ import argon2 from 'argon2'
 import z from 'zod'
 import { FastifyReply, FastifyRequest } from 'fastify'
 import {
+  buyCourseAction,
   changeRoleToTeacherAction,
   createUserAction,
   getUserByEmailAction,
@@ -276,4 +277,72 @@ export const getUserByToken = async (req: FastifyRequest, res: FastifyReply) => 
   }
 
   res.send(userInfo)
+}
+
+export const buyCourse = async (req: FastifyRequest, res: FastifyReply) => {
+  const courseObject = z.object({
+    course_id: z.string(),
+  })
+
+  const course = courseObject.safeParse(req.body)
+
+  if (!course.success) {
+    res.status(400).send({ error: course.error })
+  } else {
+    const { course_id } = course.data
+
+    const authorization = req.headers['authorization']
+    if (!authorization) {
+      res.status(401).send({ error: 'Not authorized' })
+      return
+    }
+    const token = authorization.replace('Bearer ', '')
+    const userInfo = await getUserByTokenAction(token)
+
+    if (!userInfo) {
+      res.status(401).send({ error: 'Not authorized' })
+      return
+    }
+
+    try {
+      await buyCourseAction(token, course_id)
+      res.send({ message: 'Course bought successfully' })
+    } catch (error) {
+      res.status(500).send({ error: 'An error occurred while trying to buy the course' })
+    }
+  }
+}
+
+export const getUserCourses = async (req: FastifyRequest, res: FastifyReply) => {
+  const authorization = req.headers['authorization']
+  if (!authorization) {
+    res.status(401).send({ error: 'Not authorized' })
+    return
+  }
+  const token = authorization.replace('Bearer ', '')
+  const userInfo = await getUserByTokenAction(token)
+
+  if (!userInfo) {
+    res.status(401).send({ error: 'Not authorized' })
+    return
+  }
+
+  try {
+    const user = await prisma.user.findUnique({
+      where: {
+        id: userInfo.id,
+      },
+      include: {
+        Course: true,
+      },
+    })
+
+    if (!user) {
+      res.status(404).send({ error: 'User not found' })
+    }
+
+    res.send(user)
+  } catch (error) {
+    res.status(500).send({ error: 'An error occurred while trying to get the user' })
+  }
 }

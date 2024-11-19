@@ -66,3 +66,21 @@ export const changeRoleToTeacherAction = async (id: string, graduation: string) 
     return { error: error.message }
   }
 }
+
+export const buyCourseAction = async (token: string, course_id: string) => {
+  const { user_id } = jwt.verify(
+    token,
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiZTA4ZTU1ODUtZjRjMi00ODRjLThhNzAtM2MzNGNlNWQyODkzIiwiaWF0IjoxNzE3NzczMTM0fQ.y3C12gPPFo8AOkDEUsH1Hdof7auwMNBYux3wwLMBhz8'
+  ) as {
+    user_id: string
+  }
+
+  try {
+    return await prisma.user.update({
+      where: { id: user_id },
+      data: { Course: { connect: { id: course_id } } },
+    })
+  } catch (error) {
+    return { error: error.message }
+  }
+}
