@@ -305,10 +305,10 @@ export const buyCourse = async (req: FastifyRequest, res: FastifyReply) => {
     }
 
     try {
-      await buyCourseAction(token, course_id)
+      await buyCourseAction(userInfo.id, course_id)
       res.send({ message: 'Course bought successfully' })
     } catch (error) {
-      res.status(500).send({ error: 'An error occurred while trying to buy the course' })
+      res.status(500).send({ error: 'An error occurred while trying to buy the course', errorMsg: error })
     }
   }
 }
@@ -333,7 +333,7 @@ export const getUserCourses = async (req: FastifyRequest, res: FastifyReply) => 
         id: userInfo.id,
       },
       include: {
-        Course: true,
+        purchasedCourses: true,
       },
     })
 

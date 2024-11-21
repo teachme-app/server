@@ -63,7 +63,7 @@ export const appRoutes = async (app: FastifyInstance) => {
   app.delete(`${apiURL}/course/:id`, { preHandler: [authMiddleware] }, async (req, res) =>
     deleteCourse(req, res)
   )
-  app.post(`${apiURL}/buy-course`, { preHandler: [authMiddleware] }, async (req, res) => buyCourse(req, res))
+  app.patch(`${apiURL}/buy-course`, { preHandler: [authMiddleware] }, async (req, res) => buyCourse(req, res))
 
   app.post(`${apiURL}/lesson`, { preHandler: [authMiddleware] }, async (req, res) => createLesson(req, res))
   app.patch(`${apiURL}/lesson`, { preHandler: [authMiddleware] }, async (req, res) => updateLesson(req, res))

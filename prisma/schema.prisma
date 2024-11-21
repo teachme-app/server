@@ -11,20 +11,21 @@ datasource db {
 }
 
 model User {
-  id            String     @id @default(uuid())
-  email         String     @unique
-  profile_image String     @default("https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png?20150327203541")
-  name          String
-  document      String
-  password_hash String
-  birth_date    String
-  phone         String
-  adress        String?
-  role          String     @default("USER")
-  graduation    String?
-  Course        Course[]
-  Question      Question[]
-  Answer        Answer[]
+  id               String     @id @default(uuid())
+  email            String     @unique
+  profile_image    String     @default("https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png?20150327203541")
+  name             String
+  document         String
+  password_hash    String
+  birth_date       String
+  phone            String
+  adress           String?
+  role             String     @default("USER")
+  graduation       String?
+  Course           Course[]
+  Question         Question[]
+  Answer           Answer[]
+  purchasedCourses Course[]   @relation("PurchasedCourses")
 
   @@map("User")
 }
@@ -40,6 +41,7 @@ model Course {
   user        User     @relation(references: [id], fields: [userId])
   lesson      Lesson[]
   test        Test[]
+  purchasedBy User[]   @relation("PurchasedCourses")
 
   @@map("Course")
 }
